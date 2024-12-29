@@ -1,8 +1,5 @@
 <script lang="ts">
-  type Todo = {
-    text: string;
-    done: boolean;
-  };
+  import type { Todo } from '../types/todo';
 
   let todos: Todo[] = $state([
     { text: 'Apple', done: false },

@@ -1,13 +1,35 @@
 <script lang="ts">
   import type { Todo } from '../types/todo';
+  import { onMount } from 'svelte';
 
-  let todos: Todo[] = $state([
-    { text: 'Apple', done: false },
-    { text: 'パン', done: false },
-    { text: '牛乳', done: true },
-    { text: 'Coffee', done: false }
-  ]);
+  let todos = $state([] as Todo[]);
   let newTodo: string = $state('');
+  let isInitialized: boolean = $state(false);
+
+  onMount(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const savedTodos = localStorage.getItem('todos');
+        if (savedTodos) {
+          todos = JSON.parse(savedTodos);
+        }
+      } catch (e) {
+        console.error('Failed to load todos from localStorage:', e);
+      } finally {
+        isInitialized = true;
+      }
+    }
+  });
+
+  $effect(() => {
+    if (isInitialized && typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('todos', JSON.stringify(todos));
+      } catch (e) {
+        console.error('Failed to save todos to localStorage:', e);
+      }
+    }
+  });
 
   function resetInput() {
     newTodo = '';
